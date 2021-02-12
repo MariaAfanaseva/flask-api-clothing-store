@@ -1,0 +1,33 @@
+[
+  {
+      "title": "hats",
+      "imageUrl": "images/hats.png",
+      "size": "",
+      "linkUrl": "shop/hats"
+
+  },
+  {
+      "title": "jackets",
+      "imageUrl": "images/jackets.png",
+      "size": "",
+      "linkUrl": "shop/jackets"
+  },
+  {
+      "title": "sneakers",
+      "imageUrl": "images/sneakers.png",
+      "size": "",
+      "linkUrl": "shop/sneakers"
+  },
+  {
+      "title": "mens",
+      "imageUrl": "images/men.png",
+      "size": "large",
+      "linkUrl": "shop/mens"
+  },
+  {
+      "title": "womens",
+      "imageUrl": "images/womens.png",
+      "size": "large",
+      "linkUrl": "shop/womens"
+  }
+]
