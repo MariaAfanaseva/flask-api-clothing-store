@@ -1,8 +1,13 @@
 import json
 from models.menu_items import MenuItemsModel
+from db import db
 
 
-class FillDb:
+class UpdateDb:
+    def _clear_db(self):
+        db.drop_all()
+        db.create_all()
+
     def _read_file(self, file_name):
         with open(f'json_files/{file_name}', 'r') as file:
             menu_items = json.load(file)
@@ -14,7 +19,6 @@ class FillDb:
             item = MenuItemsModel(**data)
             item.save_to_db()
 
-
-if __name__ == '__main__':
-    create_data = FillDb()
-    create_data.fill_menu()
+    def recreate_db(self):
+        self._clear_db()
+        self.fill_menu()
