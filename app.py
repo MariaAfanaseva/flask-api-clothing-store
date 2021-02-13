@@ -1,9 +1,10 @@
+import os
 from flask import Flask
-from db import db
 from flask_restful import Api
+from dotenv import load_dotenv
+from db import db
 from resources.menu_items import MenuItems
 from fill_db import UpdateDb
-
 
 app = Flask(__name__)
 app.config["PROPAGATE_EXCEPTIONS"] = True
@@ -12,16 +13,21 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 api = Api(app)
 
+load_dotenv('.env')
 
-@app.before_first_request
-def fill_db():
-    update_db = UpdateDb()
-    update_db.recreate_db()
-
+DEBUG = (os.getenv('DEBUG') == 'True')
 
 api.add_resource(MenuItems, "/menu")
 
 db.init_app(app)
 
+
+@app.before_first_request
+def update_db():
+    if os.getenv('FILL_DB') == 'True':
+        update = UpdateDb()
+        update.recreate_db()
+
+
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug=DEBUG)
