@@ -1,14 +1,23 @@
 from db import db
+from models.product import Product
+
+menu_products = db.Table('menu_products',
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True),
+    db.Column('menu_id', db.Integer, db.ForeignKey('menu.id'), primary_key=True)
+)
 
 
-class MenuItemsModel(db.Model):
+class MenuItem(db.Model):
     __tablename__ = 'menu'
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80))
+
+    title = db.Column(db.String(80), nullable=False, unique=True)
     image_url = db.Column(db.String(128))
     size = db.Column(db.String(80))
     link_url = db.Column(db.String(128))
+    products = db.relationship('Product', secondary=menu_products, lazy='subquery',
+                               backref=db.backref('menu', lazy=True))
 
     def __init__(self, title, imageUrl, size, linkUrl):
         self.title = title
@@ -24,6 +33,10 @@ class MenuItemsModel(db.Model):
             'size': self.size,
             'linkUrl': self.link_url,
         }
+
+    @classmethod
+    def find_by_title(cls, title):
+        return cls.query.filter_by(title=title).first()
 
     @classmethod
     def find_all(cls):
