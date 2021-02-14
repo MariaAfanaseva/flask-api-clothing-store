@@ -1,5 +1,5 @@
 import json
-from models.menu_items import MenuItemsModel
+from models.menu_item import MenuItem, Product
 from db import db
 
 
@@ -16,9 +16,21 @@ class UpdateDb:
     def fill_menu(self):
         menu_items = self._read_file('menu.json')
         for data in menu_items:
-            item = MenuItemsModel(**data)
+            item = MenuItem(**data)
             item.save_to_db()
+
+    def fill_products(self):
+        products = self._read_file('products.json')
+        for data in products:
+            product = Product(name=data['name'], image_url=data['imageUrl'],
+                              price=data['price'])
+            product.save_to_db()
+            for title in data['menu_id']:
+                menu = MenuItem.find_by_title(title)
+                menu.products.append(product)
+                menu.save_to_db()
 
     def recreate_db(self):
         self._clear_db()
         self.fill_menu()
+        self.fill_products()
