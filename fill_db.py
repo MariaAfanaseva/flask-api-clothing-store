@@ -25,7 +25,7 @@ class UpdateDb:
             product = Product(name=data['name'], image_url=data['imageUrl'],
                               price=data['price'])
             product.save_to_db()
-            for title in data['menu_id']:
+            for title in data['menuTitles']:
                 menu = MenuItem.find_by_title(title)
                 menu.products.append(product)
                 menu.save_to_db()
