@@ -4,8 +4,7 @@ from flask_restful import Api
 from dotenv import load_dotenv
 from flask_cors import CORS
 from db import db
-from resources.menu_items import MenuItems
-from resources.products import Products
+from resources.items import MenuItems, Products, ShopItems
 from fill_db import UpdateDb
 
 app = Flask(__name__)
@@ -18,8 +17,9 @@ load_dotenv('.env')
 
 DEBUG = (os.getenv('DEBUG') == 'True')
 
-api.add_resource(MenuItems, "/menu")
+api.add_resource(MenuItems, '/menu')
 api.add_resource(Products, '/<string:title>')
+api.add_resource(ShopItems, '/shop')
 
 db.init_app(app)
 
