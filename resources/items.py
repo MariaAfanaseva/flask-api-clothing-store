@@ -20,5 +20,5 @@ class ShopItems(Resource):
     def get(self):
         response = []
         for menu in MenuItem.find_all():
-            print(menu.products)
-        # return {"shopItems": [item.json()  for item in MenuItem.find_all()]}
+            response.append(menu.json_with_products(4))
+        return response

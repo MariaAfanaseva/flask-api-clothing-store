@@ -34,6 +34,14 @@ class MenuItem(db.Model):
             'linkUrl': self.link_url,
         }
 
+    def json_with_products(self, quantity):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'linkUrl': self.link_url,
+            'items': [self.products[i].json() for i in range(quantity)]
+        }
+
     @classmethod
     def find_by_title(cls, title):
         return cls.query.filter_by(title=title).first()
