@@ -1,5 +1,6 @@
 import json
 from models.menu_item import MenuItem, Product
+from models.user import User
 from db import db
 
 
@@ -30,7 +31,12 @@ class UpdateDb:
                 menu.products.append(product)
                 menu.save_to_db()
 
+    def create_admin(self):
+        admin = User(name='admin', email='admin@admin.com', password='admin', is_admin=True)
+        admin.save_to_db()
+
     def recreate_db(self):
         self._clear_db()
         self.fill_menu()
         self.fill_products()
+        self.create_admin()

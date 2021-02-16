@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from db import db
 from resources.items import MenuItems, Products, ShopItems
+from resources.users import UserRegister
 from fill_db import UpdateDb
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ DEBUG = (os.getenv('DEBUG') == 'True')
 api.add_resource(MenuItems, '/menu')
 api.add_resource(Products, '/<string:title>')
 api.add_resource(ShopItems, '/shop')
+api.add_resource(UserRegister, '/user/register')
 
 db.init_app(app)
 
