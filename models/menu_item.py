@@ -2,13 +2,13 @@ from db import db
 from models.product import Product
 
 menu_products = db.Table('menu_products',
-    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True),
-    db.Column('menu_id', db.Integer, db.ForeignKey('menu.id'), primary_key=True)
+    db.Column('product_id', db.Integer, db.ForeignKey('products.id'), primary_key=True),
+    db.Column('menu_id', db.Integer, db.ForeignKey('menu_items.id'), primary_key=True)
 )
 
 
 class MenuItem(db.Model):
-    __tablename__ = 'menu'
+    __tablename__ = 'menu_items'
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -17,7 +17,7 @@ class MenuItem(db.Model):
     size = db.Column(db.String(80))
     link_url = db.Column(db.String(128))
     products = db.relationship('Product', secondary=menu_products, lazy='subquery',
-                               backref=db.backref('menu', lazy=True))
+                               backref=db.backref('menu_items', lazy=True))
 
     def __init__(self, title, imageUrl, size, linkUrl):
         self.title = title
