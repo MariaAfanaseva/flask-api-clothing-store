@@ -1,29 +1,11 @@
 import os
-from flask import Flask
-from flask_restful import Api
 from dotenv import load_dotenv
-from flask_cors import CORS
-from db import db
-from resources.items import MenuItems, Products, ShopItems
-from resources.users import UserRegister
 from fill_db import UpdateDb
+from create_app import create_app
 
-app = Flask(__name__)
-app.config["PROPAGATE_EXCEPTIONS"] = True
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-api = Api(app)
 load_dotenv('.env')
 
-DEBUG = (os.getenv('DEBUG') == 'True')
-
-api.add_resource(MenuItems, '/menu')
-api.add_resource(Products, '/<string:title>')
-api.add_resource(ShopItems, '/shop')
-api.add_resource(UserRegister, '/user/register')
-
-db.init_app(app)
+app = create_app('development')
 
 
 @app.before_first_request
@@ -33,7 +15,5 @@ def update_db():
         update.recreate_db()
 
 
-CORS(app)
-
 if __name__ == "__main__":
-    app.run(port=5000, debug=DEBUG)
+    app.run()
