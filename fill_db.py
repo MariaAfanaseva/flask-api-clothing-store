@@ -2,10 +2,11 @@ import json
 from models.menu_item import MenuItem, Product
 from models.user import User
 from db import db
+from create_app import create_app
 
 
 class UpdateDb:
-    def _clear_db(self):
+    def clear_db(self):
         db.drop_all()
         db.create_all()
 
@@ -36,7 +37,14 @@ class UpdateDb:
         admin.save_to_db()
 
     def recreate_db(self):
-        self._clear_db()
+        self.clear_db()
         self.fill_menu()
         self.fill_products()
         self.create_admin()
+
+
+if __name__ == '__main__':
+    app = create_app("development")
+    with app.app_context():
+        update = UpdateDb()
+        update.recreate_db()
