@@ -1,26 +1,21 @@
 from flask_restful import Resource, reqparse
+from werkzeug.security import safe_str_cmp
+from flask_jwt_extended import create_access_token, create_refresh_token
 from models.user import User
 
 
-class UserRegister(Resource):
-    def _parse_user(self):
-        user_parser = reqparse.RequestParser()
+def parse_user(*args):
+    user_parser = reqparse.RequestParser()
+    for arg in args:
         user_parser.add_argument(
-            "name", type=str, required=True, help="Name field cannot be blank."
+            arg, type=str, required=True, help=f"{arg} field cannot be blank."
         )
-        user_parser.add_argument(
-            "email", type=str, required=True, help="Email field cannot be blank."
-        )
-        user_parser.add_argument(
-            "password", type=str, required=True, help="Password field cannot be blank."
-        )
-        user_parser.add_argument(
-            "confirmPassword", type=str, required=True, help="Confirm password field cannot be blank."
-        )
-        return user_parser
+    return user_parser
 
+
+class UserRegister(Resource):
     def post(self):
-        data = self._parse_user().parse_args()
+        data = parse_user('name', 'email', 'password', 'confirmPassword').parse_args()
 
         if User.find_by_email(data['email']):
             return {"message": "A user with that email already exists."}, 400
@@ -31,3 +26,21 @@ class UserRegister(Resource):
         user = User(name=data['name'], email=data['email'], password=data['password'])
         user.save_to_db()
         return {"message": "User created successfully.", "user": user.json()}, 201
+
+
+class UserLogin(Resource):
+    def post(self):
+        data = parse_user('email', 'password').parse_args()
+
+        user = User.find_by_email(data['email'])
+
+        if not user:
+            return {"message": "User doesn't exist"}, 400
+
+        elif safe_str_cmp(user.password, data['password']):
+            access_token = create_access_token(identity=user.id, fresh=True)
+            refresh_token = create_refresh_token(user.id)
+            return {"access_token": access_token, "refresh_token": refresh_token}, 200
+
+        return {"message": "Invalid credentials!"}, 401
+

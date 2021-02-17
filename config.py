@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv('.env')
 
 
 class Config(object):
@@ -6,6 +9,7 @@ class Config(object):
     DEBUG = False
     SECRET = os.getenv('SECRET')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevelopmentConfig(Config):

@@ -3,3 +3,4 @@ Flask-RESTful
 Flask-SQLAlchemy
 python-dotenv
 flask-cors
+Flask-JWT-Extended
