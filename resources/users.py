@@ -1,5 +1,4 @@
 from flask_restful import Resource, reqparse
-from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import create_access_token, create_refresh_token
 from models.user import User
 
@@ -23,7 +22,8 @@ class UserRegister(Resource):
         if data['password'] != data['confirmPassword']:
             return {"message": "The passwords mismatch"}, 400
 
-        user = User(name=data['name'], email=data['email'], password=data['password'])
+        password = User.generate_hash(data['password'])
+        user = User(name=data['name'], email=data['email'], password=password)
         user.save_to_db()
         return {"message": "User created successfully.", "user": user.json()}, 201
 
@@ -37,10 +37,9 @@ class UserLogin(Resource):
         if not user:
             return {"message": "User doesn't exist"}, 400
 
-        elif safe_str_cmp(user.password, data['password']):
+        elif user.verify_hash(data['password'], user.password):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
             return {"access_token": access_token, "refresh_token": refresh_token}, 200
 
         return {"message": "Invalid credentials!"}, 401
-
