@@ -4,4 +4,3 @@ Flask-SQLAlchemy
 python-dotenv
 flask-cors
 Flask-JWT-Extended
-passlib

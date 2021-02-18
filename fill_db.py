@@ -34,8 +34,7 @@ class UpdateDb:
 
     @staticmethod
     def create_admin():
-        password = User.generate_hash('admin')
-        admin = User(name='admin', email='admin@admin.com', password=password, is_admin=True)
+        admin = User(name='admin', email='admin@admin.com', password='admin', is_admin=True)
         admin.save_to_db()
 
     def recreate_db(self):

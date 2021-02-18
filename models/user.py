@@ -1,4 +1,4 @@
-from passlib.hash import pbkdf2_sha256 as sha256
+from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 
 
@@ -14,7 +14,7 @@ class User(db.Model):
     def __init__(self, name, email, password, is_admin=False):
         self.name = name
         self.email = email
-        self.password = password
+        self.password = generate_password_hash(password)
         self.is_admin = is_admin
 
     def json(self):
@@ -28,10 +28,5 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    @staticmethod
-    def generate_hash(password):
-        return sha256.hash(password)
-
-    @staticmethod
-    def verify_hash(password, hash):
-        return sha256.verify(password, hash)
+    def verify_password(self, pwd):
+        return check_password_hash(self.password, pwd)
