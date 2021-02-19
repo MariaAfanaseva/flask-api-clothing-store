@@ -5,8 +5,8 @@ from flask_jwt_extended import (create_access_token,
                                 get_jwt,
                                 get_jwt_identity)
 from sqlalchemy.exc import IntegrityError
-from models.user import User, BlockList
-
+from models.user import User
+from models.blocklist import BlockList, is_in_list
 
 def parse_user(*args):
     user_parser = reqparse.RequestParser()
@@ -54,9 +54,11 @@ class UserLogout(Resource):
     def post(self):
         jti = get_jwt()["jti"]  # jti is "JWT ID", a unique identifier for a JWT.
         user_email = get_jwt_identity()
-        data = BlockList(jti)
-        try:
-            data.save_to_db()
-        except IntegrityError:
+
+        if not is_in_list(jti):
+            block_list = BlockList.new()
+            block_list.jti = jti
+            block_list.save()
+            return {"message": f"User {user_email} successfully logged out."}, 200
+        else:
             return {"message": f"User {user_email} has already logged out."}, 200
-        return {"message": f"User {user_email} successfully logged out."}, 200
