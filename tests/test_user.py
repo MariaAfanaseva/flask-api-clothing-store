@@ -103,6 +103,26 @@ class UserTestCase(unittest.TestCase):
                       res.data)
         self.assertIn(b'"refresh_token"',
                       res.data)
+        token = json.loads(res.data.decode())
+        self.assertEqual(str, type(token['access_token']))
+        self.logout(token)
+
+    def logout(self, token):
+        res_1 = self.client.post('/user/logout',
+                                 headers={"Content-Type": "application/json",
+                                          "Authorization": "Bearer " + token['access_token']},
+                                 )
+        self.assertEqual(res_1.status_code, 200)
+        self.assertIn(b"User admin@admin.com successfully logged out.",
+                      res_1.data)
+
+        res_2 = self.client.post('/user/logout',
+                                 headers={"Content-Type": "application/json",
+                                          "Authorization": "Bearer " + token['access_token']},
+                                 )
+        self.assertEqual(res_2.status_code, 200)
+        self.assertIn(b"User admin@admin.com has already logged out",
+                      res_2.data)
 
     def test_login_user_without_password(self):
         """Test API login user without password(POST request)"""
