@@ -1,6 +1,11 @@
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import create_access_token, create_refresh_token
-from models.user import User
+from flask_jwt_extended import (create_access_token,
+                                create_refresh_token,
+                                jwt_required,
+                                get_jwt,
+                                get_jwt_identity)
+from sqlalchemy.exc import IntegrityError
+from models.user import User, BlockList
 
 
 def parse_user(*args):
@@ -42,3 +47,16 @@ class UserLogin(Resource):
             return {"access_token": access_token, "refresh_token": refresh_token}, 200
 
         return {"message": "Invalid credentials!"}, 401
+
+
+class UserLogout(Resource):
+    @jwt_required()
+    def post(self):
+        jti = get_jwt()["jti"]  # jti is "JWT ID", a unique identifier for a JWT.
+        user_email = get_jwt_identity()
+        data = BlockList(jti)
+        try:
+            data.save_to_db()
+        except IntegrityError:
+            return {"message": f"User {user_email} has already logged out."}, 200
+        return {"message": f"User {user_email} successfully logged out."}, 200

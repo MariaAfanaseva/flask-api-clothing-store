@@ -30,3 +30,22 @@ class User(db.Model):
 
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
+
+
+class BlockList(db.Model):
+    __tablename__ = "blocklist"
+
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(255), nullable=False, unique=True)
+
+    def __init__(self, jti):
+        self.jti = jti
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def is_jti_blocklisted(cls, jti):
+        query = cls.query.filter_by(jti=jti).first()
+        return bool(query)

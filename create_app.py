@@ -5,7 +5,7 @@ from flask_cors import CORS
 from db import db
 from config import app_config
 from resources.items import MenuItems, Products, ShopItems
-from resources.users import UserRegister, UserLogin
+from resources.users import UserRegister, UserLogin, UserLogout
 
 
 def create_app(config_name):
@@ -20,6 +20,7 @@ def create_app(config_name):
     api.add_resource(Products, '/shop/<string:title>')
     api.add_resource(UserRegister, '/user/register')
     api.add_resource(UserLogin, '/user/login')
+    api.add_resource(UserLogout, '/user/logout')
     db.init_app(flask_app)
 
     flask_app.secret_key = flask_app.config['SECRET']
