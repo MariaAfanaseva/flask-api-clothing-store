@@ -1,7 +1,7 @@
 import unittest
 import json
-from db import db
 from create_app import create_app
+from db import db
 from fill_db import UpdateDb
 
 
@@ -105,6 +105,7 @@ class UserTestCase(unittest.TestCase):
                       res.data)
         token = json.loads(res.data.decode())
         self.assertEqual(str, type(token['access_token']))
+        self.refresh_token(token)
         self.logout(token)
 
     def logout(self, token):
@@ -120,8 +121,24 @@ class UserTestCase(unittest.TestCase):
                                  headers={"Content-Type": "application/json",
                                           "Authorization": "Bearer " + token['access_token']},
                                  )
-        self.assertEqual(res_2.status_code, 200)
-        self.assertIn(b"User admin@admin.com has already logged out",
+        self.assertEqual(res_2.status_code, 401)
+        self.assertIn(b'"msg": "Token has been revoked"',
+                      res_2.data)
+
+    def refresh_token(self, token):
+        res_1 = self.client.post('/user/refresh',
+                                 headers={"Content-Type": "application/json",
+                                        "Authorization": "Bearer " + token['refresh_token']},
+                                 )
+        self.assertEqual(res_1.status_code, 200)
+        self.assertIn(b"access_token",
+                      res_1.data)
+        res_2 = self.client.post('/user/refresh',
+                                 headers={"Content-Type": "application/json",
+                                          "Authorization": "Bearer " + token['access_token']},
+                                 )
+        self.assertEqual(res_2.status_code, 422)
+        self.assertIn(b'"msg": "Only refresh tokens are allowed"',
                       res_2.data)
 
     def test_login_user_without_password(self):

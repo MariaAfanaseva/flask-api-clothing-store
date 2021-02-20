@@ -11,7 +11,7 @@ class BlockList(Model):
     )
 
 
-def is_in_list(jti):
+def is_jti_blocklisted(jti):
     data = BlockList.jti.find(jti)
     if data:
         return True

@@ -5,7 +5,11 @@ from flask_cors import CORS
 from db import db
 from config import app_config
 from resources.items import MenuItems, Products, ShopItems
-from resources.users import UserRegister, UserLogin, UserLogout
+from resources.users import (
+    UserRegister, UserLogin,
+    UserLogout, TokenRefresh
+)
+from models.blocklist import is_jti_blocklisted
 
 
 def create_app(config_name):
@@ -21,10 +25,21 @@ def create_app(config_name):
     api.add_resource(UserRegister, '/user/register')
     api.add_resource(UserLogin, '/user/login')
     api.add_resource(UserLogout, '/user/logout')
+    api.add_resource(TokenRefresh, '/user/refresh')
     db.init_app(flask_app)
 
     flask_app.secret_key = flask_app.config['SECRET']
-    JWTManager(flask_app)
+    jwt = JWTManager(flask_app)
+
+    @jwt.token_in_blocklist_loader
+    def check_if_token_in_blacklist(jwt_header, jwt_payload):
+        """
+         This method will check if a token is blacklisted,
+         and will be called automatically when blacklist is enabled
+        """
+        return (
+            is_jti_blocklisted(jwt_payload["jti"])
+        )
 
     CORS(flask_app)
 
