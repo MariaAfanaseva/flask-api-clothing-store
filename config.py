@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv('.env')
@@ -10,6 +11,9 @@ class Config(object):
     SECRET = os.getenv('SECRET')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(
+        hours=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES'))
+    )
 
 
 class DevelopmentConfig(Config):

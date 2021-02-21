@@ -5,4 +5,3 @@ python-dotenv
 flask-cors
 Flask-JWT-Extended
 redis
-redisca

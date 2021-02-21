@@ -2,14 +2,14 @@ from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from db import db
+from databases.db import db
 from config import app_config
 from resources.items import MenuItems, Products, ShopItems
 from resources.users import (
     UserRegister, UserLogin,
     UserLogout, TokenRefresh
 )
-from models.blocklist import is_jti_blocklisted
+from databases.redis_db import is_jti_blocklisted
 
 
 def create_app(config_name):

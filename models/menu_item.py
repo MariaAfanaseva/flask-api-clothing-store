@@ -1,4 +1,4 @@
-from db import db
+from databases.db import db
 from models.product import Product
 
 menu_products = db.Table('menu_products',

@@ -1,7 +1,7 @@
 import json
 from models.menu_item import MenuItem, Product
 from models.user import User
-from db import db
+from databases.db import db
 from create_app import create_app
 
 

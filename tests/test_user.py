@@ -1,8 +1,8 @@
 import unittest
 import json
 from create_app import create_app
-from db import db
 from fill_db import UpdateDb
+from databases.db import db
 
 
 class UserTestCase(unittest.TestCase):
@@ -33,7 +33,7 @@ class UserTestCase(unittest.TestCase):
                                headers={"Content-Type": "application/json"},
                                data=test_user)
         self.assertEqual(res.status_code, 201)
-        self.assertIn(b'"message": "User created successfully."', res.data)
+        self.assertIn(b'"msg": "User created successfully."', res.data)
 
     def test_create_incorrect_user(self):
         """Test API create user with mismatch passwords(POST request)"""
@@ -50,7 +50,7 @@ class UserTestCase(unittest.TestCase):
                                headers={"Content-Type": "application/json"},
                                data=test_user)
         self.assertEqual(res.status_code, 400)
-        self.assertIn(b'"message": "The passwords mismatch"', res.data)
+        self.assertIn(b'"msg": "The passwords mismatch"', res.data)
 
     def test_create_user_without_confirm_password(self):
         """Test API create user without confirm password(POST request)"""

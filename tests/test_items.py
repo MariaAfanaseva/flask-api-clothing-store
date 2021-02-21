@@ -1,6 +1,5 @@
 import unittest
-import json
-from db import db
+from databases.db import db
 from create_app import create_app
 from fill_db import UpdateDb
 
