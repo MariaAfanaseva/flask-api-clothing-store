@@ -29,11 +29,12 @@ class UserTestCase(unittest.TestCase):
                 "confirmPassword": 123
             }
         )
-        res = self.client.post('/user/register',
-                               headers={"Content-Type": "application/json"},
-                               data=test_user)
-        self.assertEqual(res.status_code, 201)
-        self.assertIn(b'"msg": "User created successfully."', res.data)
+        with self.client:
+            res = self.client.post('/user/register',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 201)
+            self.assertIn(b'"msg": "User created successfully."', res.data)
 
     def test_create_incorrect_user(self):
         """Test API create user with mismatch passwords(POST request)"""
@@ -45,12 +46,12 @@ class UserTestCase(unittest.TestCase):
                 "confirmPassword": 111
             }
         )
-
-        res = self.client.post('/user/register',
-                               headers={"Content-Type": "application/json"},
-                               data=test_user)
-        self.assertEqual(res.status_code, 400)
-        self.assertIn(b'"msg": "The passwords mismatch"', res.data)
+        with self.client:
+            res = self.client.post('/user/register',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 400)
+            self.assertIn(b'"msg": "The passwords mismatch"', res.data)
 
     def test_create_user_without_confirm_password(self):
         """Test API create user without confirm password(POST request)"""
@@ -61,13 +62,13 @@ class UserTestCase(unittest.TestCase):
                 "password": 123,
             }
         )
-
-        res = self.client.post('/user/register',
-                               headers={"Content-Type": "application/json"},
-                               data=test_user)
-        self.assertEqual(res.status_code, 400)
-        self.assertIn(b'"confirmPassword": "confirmPassword field cannot be blank."',
-                      res.data)
+        with self.client:
+            res = self.client.post('/user/register',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 400)
+            self.assertIn(b'"confirmPassword": "confirmPassword field cannot be blank."',
+                          res.data)
 
     def test_create_user_with_blank_name(self):
         """Test API create user without name(POST request)"""
@@ -78,13 +79,13 @@ class UserTestCase(unittest.TestCase):
                 "confirmPassword": 123
             }
         )
-
-        res = self.client.post('/user/register',
-                               headers={"Content-Type": "application/json"},
-                               data=test_user)
-        self.assertEqual(res.status_code, 400)
-        self.assertIn(b'"name field cannot be blank."',
-                      res.data)
+        with self.client:
+            res = self.client.post('/user/register',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 400)
+            self.assertIn(b'"name field cannot be blank."',
+                          res.data)
 
     def test_login_user(self):
         """Test API login user (POST request)"""
@@ -94,19 +95,19 @@ class UserTestCase(unittest.TestCase):
                 "password": "admin",
             }
         )
-
-        res = self.client.post('/user/login',
-                               headers={"Content-Type": "application/json"},
-                               data=test_user)
-        self.assertEqual(res.status_code, 200)
-        self.assertIn(b'"access_token"',
-                      res.data)
-        self.assertIn(b'"refresh_token"',
-                      res.data)
-        token = json.loads(res.data.decode())
-        self.assertEqual(str, type(token['access_token']))
-        self.refresh_token(token)
-        self.logout(token)
+        with self.client:
+            res = self.client.post('/user/login',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 200)
+            self.assertIn(b'"access_token"',
+                          res.data)
+            self.assertIn(b'"refresh_token"',
+                          res.data)
+            token = json.loads(res.data.decode())
+            self.assertEqual(str, type(token['access_token']))
+            self.refresh_token(token)
+            self.logout(token)
 
     def logout(self, token):
         res_1 = self.client.post('/user/logout',
@@ -148,13 +149,13 @@ class UserTestCase(unittest.TestCase):
                 "email": "admin@admin.com",
             }
         )
-
-        res = self.client.post('/user/login',
-                               headers={"Content-Type": "application/json"},
-                               data=test_user)
-        self.assertEqual(res.status_code, 400)
-        self.assertIn(b'"password field cannot be blank."',
-                      res.data)
+        with self.client:
+            res = self.client.post('/user/login',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 400)
+            self.assertIn(b'"password field cannot be blank."',
+                          res.data)
 
     def test_login_user_with_wrong_password(self):
         """Test API login user with wrong password(POST request)"""
@@ -164,13 +165,13 @@ class UserTestCase(unittest.TestCase):
                 "password": "a",
             }
         )
-
-        res = self.client.post('/user/login',
-                               headers={"Content-Type": "application/json"},
-                               data=test_user)
-        self.assertEqual(res.status_code, 401)
-        self.assertIn(b'"Invalid credentials!"',
-                      res.data)
+        with self.client:
+            res = self.client.post('/user/login',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 401)
+            self.assertIn(b'"Invalid credentials!"',
+                          res.data)
 
     def test_login_user_with_wrong_email(self):
         """Test API login user with wrong password(POST request)"""
@@ -180,13 +181,13 @@ class UserTestCase(unittest.TestCase):
                 "password": "a",
             }
         )
-
-        res = self.client.post('/user/login',
-                               headers={"Content-Type": "application/json"},
-                               data=test_user)
-        self.assertEqual(res.status_code, 400)
-        self.assertIn(b'"User doesn\'t exist"',
-                      res.data)
+        with self.client:
+            res = self.client.post('/user/login',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 400)
+            self.assertIn(b'"User doesn\'t exist"',
+                          res.data)
 
     def tearDown(self):
         """teardown all initialized variables."""
