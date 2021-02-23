@@ -1,4 +1,6 @@
-from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
+from werkzeug.security import (generate_password_hash,
+                               check_password_hash)
 from databases.db import db
 
 
@@ -9,12 +11,14 @@ class User(db.Model):
     email = db.Column(db.String(80), unique=True, nullable=False)
     name = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(80), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
+    registered_on = db.Column(db.DateTime, nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     def __init__(self, name, email, password, is_admin=False):
         self.name = name
         self.email = email
         self.password = generate_password_hash(password)
+        self.registered_on = datetime.datetime.now()
         self.is_admin = is_admin
 
     def json(self):
