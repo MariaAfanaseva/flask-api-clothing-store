@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   web:
     build: .
@@ -10,3 +10,20 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+  postgres:
+    image: "postgres:alpine"
+    env_file:
+      - configs/.env-postgres
+    ports:
+      - "15432:5432"
+    volumes:
+      - /home/maria/clothin_shop_postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file:
+      - configs/.env-postgres
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres

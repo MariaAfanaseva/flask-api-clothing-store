@@ -3,7 +3,7 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from databases.db import db
-from config import app_config
+from configs.config import app_config
 from resources.items import MenuItems, Products, ShopItems
 from resources.users import (
     UserRegister, UserLogin,
@@ -15,7 +15,7 @@ from databases.redis_db import is_jti_blocklisted
 def create_app(config_name):
     flask_app = Flask(__name__)
     flask_app.config.from_object(app_config[config_name])
-    flask_app.config.from_pyfile('config.py')
+    flask_app.config.from_pyfile('configs/config.py')
 
     api = Api(flask_app)
 
