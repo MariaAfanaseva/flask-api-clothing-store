@@ -1,3 +1,4 @@
+from email_validator import validate_email, EmailNotValidError
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import (create_access_token,
                                 create_refresh_token,
@@ -26,6 +27,13 @@ class UserRegister(Resource):
 
         if data['password'] != data['confirmPassword']:
             return {"msg": "The passwords mismatch"}, 400
+
+        try:
+            valid = validate_email(data['email'])
+            data['email'] = valid.email
+
+        except EmailNotValidError as e:
+            return {"error": f"{str(e)}"}, 400
 
         user = User(name=data['name'], email=data['email'], password=data['password'])
         user.save_to_db()

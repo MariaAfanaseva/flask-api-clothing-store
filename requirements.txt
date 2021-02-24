@@ -1,8 +1,11 @@
 Flask
 Flask-RESTful
 Flask-SQLAlchemy
-python-dotenv
 flask-cors
+flask_script
+flask_migrate
+python-dotenv
 Flask-JWT-Extended
 redis
 psycopg2
+email-validator

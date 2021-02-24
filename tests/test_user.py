@@ -87,6 +87,23 @@ class UserTestCase(unittest.TestCase):
             self.assertIn(b'"name field cannot be blank."',
                           res.data)
 
+    def test_user_creation_with_wrong_email(self):
+        """Test API can create a user (POST request)"""
+        test_user = json.dumps(
+            {
+                "name": "maria",
+                "email": "@maria.com",
+                "password": 123,
+                "confirmPassword": 123
+            }
+        )
+        with self.client:
+            res = self.client.post('/user/register',
+                                   headers={"Content-Type": "application/json"},
+                                   data=test_user)
+            self.assertEqual(res.status_code, 400)
+            self.assertIn(b'"error": "There must be something before the @-sign."', res.data)
+
     def test_login_user(self):
         """Test API login user (POST request)"""
         test_user = json.dumps(
