@@ -3,6 +3,7 @@ import json
 from create_app import create_app
 from fill_db import UpdateDb
 from databases.db import db
+from tests.users import ADMIN_USER, USER
 
 
 class UserTestCase(unittest.TestCase):
@@ -106,12 +107,7 @@ class UserTestCase(unittest.TestCase):
 
     def test_login_user(self):
         """Test API login user (POST request)"""
-        test_user = json.dumps(
-            {
-                "email": "admin@admin.com",
-                "password": "admin",
-            }
-        )
+        test_user = json.dumps(ADMIN_USER)
         with self.client:
             res = self.client.post('/user/login',
                                    headers={"Content-Type": "application/json"},

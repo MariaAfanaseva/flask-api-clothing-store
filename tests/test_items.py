@@ -4,8 +4,8 @@ from create_app import create_app
 from fill_db import UpdateDb
 
 
-class UserTestCase(unittest.TestCase):
-    """This class represents the menu items test case"""
+class ItemsTestCase(unittest.TestCase):
+    """This class represents the product items test case"""
 
     def setUp(self):
         """Define test variables and initialize app."""
@@ -15,12 +15,6 @@ class UserTestCase(unittest.TestCase):
         with self.app.app_context():
             update = UpdateDb()
             update.recreate_db()
-
-    def test_menu_items(self):
-        """Test API can get a menu items (GET request)"""
-        res = self.client.get('/menu')
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(list, type(res.json['menuItems']))
 
     def test_menu_products(self):
         """Test API can get a shop items (GET request)"""

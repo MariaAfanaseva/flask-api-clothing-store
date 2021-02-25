@@ -1,8 +1,12 @@
 import json
+import os
 from models.menu_item import MenuItem, Product
 from models.user import User
 from databases.db import db
 from create_app import create_app
+from dotenv import load_dotenv
+
+load_dotenv('configs/.env-users')
 
 
 class UpdateDb:
@@ -34,14 +38,22 @@ class UpdateDb:
 
     @staticmethod
     def create_admin():
-        admin = User(name='admin', email='admin@admin.com', password='admin', is_admin=True)
+        admin = User(name=os.getenv('ADMIN_NAME'), email=os.getenv('ADMIN_EMAIL'),
+                     password=os.getenv('ADMIN_PASSWORD'), is_admin=True)
         admin.save_to_db()
+
+    @staticmethod
+    def create_user():
+        user = User(name=os.getenv('USER_NAME'), email=os.getenv('USER_EMAIL'),
+                    password=os.getenv('USER_PASSWORD'))
+        user.save_to_db()
 
     def recreate_db(self):
         self.clear_db()
         self.fill_menu()
         self.fill_products()
         self.create_admin()
+        self.create_user()
 
 
 if __name__ == '__main__':
