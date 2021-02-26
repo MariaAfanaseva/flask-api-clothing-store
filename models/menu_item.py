@@ -47,6 +47,10 @@ class MenuItem(db.Model):
         return cls.query.filter_by(title=title).first()
 
     @classmethod
+    def find_by_id(cls, number):
+        return cls.query.filter_by(id=number).first()
+
+    @classmethod
     def find_all(cls):
         return cls.query.all()
 
