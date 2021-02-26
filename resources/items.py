@@ -22,6 +22,8 @@ class MenuItems(Resource):
         user_email = get_jwt_identity()
         if User.find_by_email(user_email).is_admin:
             data = request_parser('title', 'imageUrl', 'size', 'linkUrl').parse_args()
+            if MenuItem.find_by_title(data['title']):
+                return {"msg": "Menu item with that title already exists."}, 400
             menu_item = MenuItem(**data)
             try:
                 menu_item.save_to_db()

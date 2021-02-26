@@ -21,6 +21,14 @@ class MenuItemsTestCase(unittest.TestCase):
                 "linkUrl": "shop/dress",
             }
         )
+        self.existed_menu_item = json.dumps(
+            {
+                "title": "hats",
+                "imageUrl": "images/hats",
+                "size": "",
+                "linkUrl": "shop/hats",
+            }
+        )
         self.test_admin = json.dumps(ADMIN_USER)
         self.test_user = json.dumps(USER)
 
@@ -104,6 +112,21 @@ class MenuItemsTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
         self.assertEqual('imageUrl field cannot be blank.',
                          data['message']['imageUrl'])
+
+    def test_create_menu_item_with_existed_title(self):
+
+        """Test API can create a menu item with title, that already exists (POST request)"""
+
+        token = self.login_user(self.test_admin)
+        res = self.client.post('/menu',
+                               headers={"Content-Type": "application/json",
+                                        "Authorization": "Bearer " + token['refresh_token']},
+                               data=self.existed_menu_item
+                               )
+        data = json.loads(res.data.decode())
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual('Menu item with that title already exists.',
+                         data['msg'])
 
     def tearDown(self):
         """teardown all initialized variables."""
