@@ -34,29 +34,44 @@ class MenuItems(Resource):
             except Exception as e:
                 return {"msg": f"An error occurred while inserting the item.{e}"}, 500
             return {"msg": "Menu item is created successfully.", "menu_item": menu_item.json()}, 201
-        return {"msg": "Тo access rights to perform this operation."}, 401
+        return {"msg": "Admin privilege required."}, 401
 
     @jwt_required(refresh=True)
     def put(self):
-        data = request_parser('id', 'title', 'imageUrl', 'size', 'linkUrl').parse_args()
-        menu_item = MenuItem.find_by_id(data['id'])
+        user_email = get_jwt_identity()
+        if User.find_by_email(user_email).is_admin:
+            data = request_parser('id', 'title', 'imageUrl', 'size', 'linkUrl').parse_args()
+            menu_item = MenuItem.find_by_id(data['id'])
 
-        if menu_item:
-            if menu_item.title != data['title'] and MenuItem.find_by_title(data['title']):
-                return {"msg": "Menu item with that title already exists."}, 400
+            if menu_item:
+                if menu_item.title != data['title'] and MenuItem.find_by_title(data['title']):
+                    return {"msg": "Menu item with that title already exists."}, 400
 
-            menu_item.title = data['title']
-            menu_item.image_url = data['imageUrl']
-            menu_item.size = data['size']
-            menu_item.link_url = data['linkUrl']
+                menu_item.title = data['title']
+                menu_item.image_url = data['imageUrl']
+                menu_item.size = data['size']
+                menu_item.link_url = data['linkUrl']
 
-            try:
-                menu_item.save_to_db()
-            except Exception as e:
-                return {"msg": f"An error occurred while inserting the item.{e}"}, 500
+                try:
+                    menu_item.save_to_db()
+                except Exception as e:
+                    return {"msg": f"An error occurred while inserting the item.{e}"}, 500
 
-            return {"msg": "Menu item was updated successfully.", "menu_item": menu_item.json()}, 200
-        return {"msg": "Menu item with that id doesn't exists."}, 400
+                return {"msg": "Menu item was updated successfully.", "menu_item": menu_item.json()}, 200
+            return {"msg": "Menu item with that id doesn't exists."}, 400
+        return {"msg": "Admin privilege required."}, 401
+
+    @jwt_required(refresh=True)
+    def delete(self):
+        user_email = get_jwt_identity()
+        if User.find_by_email(user_email).is_admin:
+            data = request_parser('id').parse_args()
+            menu_item = MenuItem.find_by_id(data['id'])
+            if menu_item:
+                menu_item.delete_from_db()
+                return {"msg": "Menu item was deleted successfully."}, 200
+            return {"msg": "Menu item with that id doesn't exists."}, 400
+        return {"msg": "Admin privilege required."}, 401
 
 
 class Products(Resource):

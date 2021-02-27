@@ -3,3 +3,4 @@ migrations/
 .env
 .env-postgres
 .env-users
+.idea/
