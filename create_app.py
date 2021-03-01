@@ -4,7 +4,8 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from databases.db import db
 from configs.config import app_config
-from resources.items import MenuItems, Products, ShopItems
+from resources.items import MenuItems, ShopItems
+from resources.products import Products, UpdateProduct
 from resources.users import (
     UserRegister, UserLogin,
     UserLogout, TokenRefresh
@@ -22,6 +23,7 @@ def create_app(config_name):
     api.add_resource(MenuItems, '/menu')
     api.add_resource(ShopItems, '/shop')
     api.add_resource(Products, '/shop/<string:title>')
+    api.add_resource(UpdateProduct, '/product')
     api.add_resource(UserRegister, '/user/register')
     api.add_resource(UserLogin, '/user/login')
     api.add_resource(UserLogout, '/user/logout')

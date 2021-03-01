@@ -11,9 +11,10 @@ def request_parser(*args):
             parser.add_argument(
                 arg, type=int, required=True, help="id field must be integer."
             )
-        parser.add_argument(
-            arg, type=str, required=True, help=f"{arg} field cannot be blank."
-        )
+        else:
+            parser.add_argument(
+                arg, type=str, required=True, help=f"{arg} field cannot be blank."
+            )
     return parser
 
 
@@ -72,15 +73,6 @@ class MenuItems(Resource):
                 return {"msg": "Menu item was deleted successfully."}, 200
             return {"msg": "Menu item with that id doesn't exists."}, 400
         return {"msg": "Admin privilege required."}, 401
-
-
-class Products(Resource):
-    def get(self, title):
-        products = MenuItem.query.filter_by(title=title).first().products
-        if products:
-            return {"products": [x.json() for x in products]}
-        else:
-            return {'error': 'Not found'}
 
 
 class ShopItems(Resource):
