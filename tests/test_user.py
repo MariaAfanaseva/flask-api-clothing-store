@@ -13,9 +13,10 @@ class UserTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app("testing")
         self.client = self.app.test_client()
+        self.app_context = self.app.app_context()
 
         # binds the app to the current context
-        with self.app.app_context():
+        with self.app_context:
             update = UpdateDb()
             update.clear_db()
             update.create_admin()
@@ -30,7 +31,7 @@ class UserTestCase(unittest.TestCase):
                 "confirmPassword": 123
             }
         )
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/register',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -47,7 +48,7 @@ class UserTestCase(unittest.TestCase):
                 "confirmPassword": 111
             }
         )
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/register',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -63,7 +64,7 @@ class UserTestCase(unittest.TestCase):
                 "password": 123,
             }
         )
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/register',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -80,7 +81,7 @@ class UserTestCase(unittest.TestCase):
                 "confirmPassword": 123
             }
         )
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/register',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -98,7 +99,7 @@ class UserTestCase(unittest.TestCase):
                 "confirmPassword": 123
             }
         )
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/register',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -108,7 +109,7 @@ class UserTestCase(unittest.TestCase):
     def test_login_user(self):
         """Test API login user (POST request)"""
         test_user = json.dumps(ADMIN_USER)
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/login',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -162,7 +163,7 @@ class UserTestCase(unittest.TestCase):
                 "email": "admin@admin.com",
             }
         )
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/login',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -178,7 +179,7 @@ class UserTestCase(unittest.TestCase):
                 "password": "a",
             }
         )
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/login',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -194,7 +195,7 @@ class UserTestCase(unittest.TestCase):
                 "password": "a",
             }
         )
-        with self.client:
+        with self.app_context:
             res = self.client.post('/user/login',
                                    headers={"Content-Type": "application/json"},
                                    data=test_user)
@@ -204,7 +205,7 @@ class UserTestCase(unittest.TestCase):
 
     def tearDown(self):
         """teardown all initialized variables."""
-        with self.app.app_context():
+        with self.app_context:
             db.session.remove()
             db.drop_all()
 

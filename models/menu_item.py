@@ -11,12 +11,11 @@ class MenuItem(db.Model):
     __tablename__ = 'menu_items'
 
     id = db.Column(db.Integer, primary_key=True)
-
     title = db.Column(db.String(80), nullable=False, unique=True)
     image_url = db.Column(db.String(128))
     size = db.Column(db.String(80))
     link_url = db.Column(db.String(128))
-    products = db.relationship('Product', secondary=menu_products, lazy='subquery',
+    products = db.relationship('Product', secondary=menu_products, lazy='dynamic',
                                backref=db.backref('menu_items', lazy=True))
 
     def __init__(self, title, imageUrl, size, linkUrl):
@@ -39,7 +38,7 @@ class MenuItem(db.Model):
             'id': self.id,
             'title': self.title,
             'linkUrl': self.link_url,
-            'items': [self.products[i].json() for i in range(quantity)]
+            'items': [product.json() for product in self.products.limit(quantity).all()]
         }
 
     @classmethod

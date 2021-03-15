@@ -13,6 +13,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app("testing")
         self.client = self.app.test_client()
+        self.app_context = self.app.app_context()
         self.test_menu_item = json.dumps(
             {
                 "title": "Dress",
@@ -40,13 +41,13 @@ class MenuItemsTestCase(unittest.TestCase):
         self.test_admin = json.dumps(ADMIN_USER)
         self.test_user = json.dumps(USER)
 
-        with self.app.app_context():
+        with self.app_context:
             update = UpdateDb()
             update.recreate_db()
 
     def test_menu_items(self):
         """Test API can get a menu items (GET request)."""
-        with self.client:
+        with self.app_context:
             res = self.client.get('/menu')
             self.assertEqual(res.status_code, 200)
             self.assertEqual(list, type(res.json['menuItems']))
@@ -60,7 +61,7 @@ class MenuItemsTestCase(unittest.TestCase):
 
     def test_create_menu_item(self):
         """Test API can create a menu item (POST request)."""
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_admin)
             res = self.client.post('/menu',
                                    headers={"Content-Type": "application/json",
@@ -76,7 +77,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not create a menu item with access token
         instead refresh token (POST request)
         """
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_admin)
             res = self.client.post('/menu',
                                    headers={"Content-Type": "application/json",
@@ -92,7 +93,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not create a menu item
         with not admin user (POST request)
         """
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_user)
             res = self.client.post('/menu',
                                    headers={"Content-Type": "application/json",
@@ -108,7 +109,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not create a menu item
         with the wrong data(POST request)
         """
-        with self.client:
+        with self.app_context:
             test_menu_item = json.dumps({"title": "Dress"})
             token = self.login_user(self.test_admin)
             res = self.client.post('/menu',
@@ -125,7 +126,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not create a menu item with title,
         that already exists (POST request)
         """
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_admin)
             res = self.client.post('/menu',
                                    headers={"Content-Type": "application/json",
@@ -139,7 +140,7 @@ class MenuItemsTestCase(unittest.TestCase):
 
     def test_update_menu_item(self):
         """Test API can update a menu item (PUT request)."""
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_admin)
             res = self.client.put('/menu',
                                   headers={"Content-Type": "application/json",
@@ -155,7 +156,7 @@ class MenuItemsTestCase(unittest.TestCase):
 
     def test_update_menu_item_with_wrong_id(self):
         """Test API can not update a menu item with wrong id (PUT request)."""
-        with self.client:
+        with self.app_context:
             menu_item = self.updated_menu_item.copy()
             menu_item['id'] = 'sdf'
             token = self.login_user(self.test_admin)
@@ -171,7 +172,7 @@ class MenuItemsTestCase(unittest.TestCase):
 
     def test_update_menu_item_with_wrong_title(self):
         """Test API can not update a menu item title, that already exists (PUT request)."""
-        with self.client:
+        with self.app_context:
             menu_item = self.updated_menu_item.copy()
             menu_item['title'] = 'jackets'
             token = self.login_user(self.test_admin)
@@ -189,7 +190,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not update a menu item
         with a user who is not admin (PUT request).
         """
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_user)
             res = self.client.put('/menu',
                                   headers={"Content-Type": "application/json",
@@ -203,7 +204,7 @@ class MenuItemsTestCase(unittest.TestCase):
 
     def test_delete_menu_item(self):
         """Test API can delete a menu item (DELETE request)."""
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_admin)
             res = self.client.delete('/menu',
                                      headers={"Content-Type": "application/json",
@@ -222,7 +223,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not delete a menu item
         with a user who is not admin (DELETE request).
         """
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_user)
             res = self.client.delete('/menu',
                                      headers={"Content-Type": "application/json",
@@ -238,7 +239,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not delete a menu item
         with access token instead refresh token (DELETE request).
         """
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_admin)
             res = self.client.delete('/menu',
                                      headers={"Content-Type": "application/json",
@@ -254,7 +255,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not delete a menu item
         with id that doesn't exists (DELETE request).
         """
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_admin)
             res = self.client.delete('/menu',
                                      headers={"Content-Type": "application/json",
@@ -270,7 +271,7 @@ class MenuItemsTestCase(unittest.TestCase):
         """Test API can not delete a menu item
         without id(DELETE request).
         """
-        with self.client:
+        with self.app_context:
             token = self.login_user(self.test_admin)
             res = self.client.delete('/menu',
                                      headers={"Content-Type": "application/json",
@@ -284,7 +285,7 @@ class MenuItemsTestCase(unittest.TestCase):
 
     def tearDown(self):
         """Teardown all initialized variables."""
-        with self.app.app_context():
+        with self.app_context:
             db.session.remove()
             db.drop_all()
 
